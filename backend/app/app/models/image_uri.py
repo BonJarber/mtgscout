@@ -1,6 +1,10 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
+from typing import TYPE_CHECKING
 
 from app.db.base_class import Base
+
+if TYPE_CHECKING:
+    from .image_uri import ImageURI  # noqa: F401
 
 
 class ImageURI(Base):
