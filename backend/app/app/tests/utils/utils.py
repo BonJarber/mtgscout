@@ -1,5 +1,6 @@
 import random
 import string
+from decimal import Decimal
 from typing import Dict
 
 from fastapi.testclient import TestClient
@@ -15,6 +16,22 @@ def random_email() -> str:
     return f"{random_lower_string()}@{random_lower_string()}.com"
 
 
+def random_url() -> str:
+    return f"https://{random_lower_string()}.com/"
+
+
+def random_price() -> Decimal:
+    return Decimal(random.uniform(0.25, 100)).quantize(Decimal(".01"))
+
+
+def random_integer() -> int:
+    return round(random.uniform(1, 10))
+
+
+def random_boolean() -> bool:
+    return bool(random.getrandbits(1))
+
+
 def get_superuser_token_headers(client: TestClient) -> Dict[str, str]:
     login_data = {
         "username": settings.FIRST_SUPERUSER,
@@ -26,6 +43,3 @@ def get_superuser_token_headers(client: TestClient) -> Dict[str, str]:
     headers = {"Authorization": f"Bearer {a_token}"}
     return headers
 
-
-def random_url() -> str:
-    return f"https://{random_lower_string()}.com/"
