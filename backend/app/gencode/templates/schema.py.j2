@@ -21,6 +21,7 @@ class {{upper_name}}Create({{upper_name}}Base):
     {% for field in fields %}
     {% if field.schema.is_create %}
     {{field.name}}: {% if field.schema.is_create.is_optional %}Optional[{{field.type}}]{% else %}{{field.type}}{% endif %}
+
     {% endif %}
     {% endfor %}
 
@@ -31,6 +32,7 @@ class {{upper_name}}Update({{upper_name}}Base):
     {% for field in fields %}
     {% if field.schema.is_update %}
     {{field.name}}: {% if field.schema.is_update.is_optional %}Optional[{{field.type}}]{% else %}{{field.type}}{% endif %}
+    
     {% endif %}
     {% endfor %}
     {% else %}
