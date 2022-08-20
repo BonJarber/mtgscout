@@ -25,3 +25,7 @@ def get_superuser_token_headers(client: TestClient) -> Dict[str, str]:
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
     return headers
+
+
+def random_url() -> str:
+    return f"https://{random_lower_string()}.com/"
