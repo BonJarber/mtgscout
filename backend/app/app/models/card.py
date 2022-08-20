@@ -28,3 +28,7 @@ class Card(Base):
         "ImageURI", cascade="all, delete-orphan", backref="card", lazy="dynamic"
     )
 
+    prices = relationship(
+        "CardPrice", cascade="all, delete-orphan", backref="card", lazy="dynamic"
+    )
+

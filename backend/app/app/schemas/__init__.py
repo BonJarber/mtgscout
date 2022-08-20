@@ -5,3 +5,10 @@ from .user import User, UserCreate, UserInDB, UserUpdate
 from .card import Card, CardCreate, CardInDB, CardUpdate
 from .image_uri import ImageURI, ImageURICreate, ImageURIInDB, ImageURIUpdate
 from .store import Store, StoreCreate, StoreInDB, StoreUpdate  # noqa
+from .card_price import (
+    CardPrice,
+    CardPriceCreate,
+    CardPriceInDB,
+    CardPriceUpdate,
+)  # noqa
+

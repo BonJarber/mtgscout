@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.db.base_class import Base
 
@@ -13,3 +14,7 @@ class Store(Base):
     name = Column(String, index=True)
     affiliate_code = Column(String, index=True)
     website = Column(String)
+
+    prices = relationship(
+        "CardPrice", cascade="all, delete-orphan", backref="store", lazy="dynamic"
+    )

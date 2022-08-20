@@ -1,0 +1,74 @@
+lower_name: "card_price"
+upper_name: "CardPrice"
+is_api: False
+fields:
+
+  - name: price
+    type: int
+    column_type: Integer
+    is_index: True
+    schema:
+      is_base:
+        is_optional: True
+      is_create:
+        is_optional: False
+
+  - name: quantity
+    type: int
+    column_type: Integer
+    is_index: True
+    schema:
+      is_base: 
+        is_optional: True
+      is_create:
+        is_optional: False
+
+  - name: condition
+    type: str
+    column_type: String
+    schema:
+      is_base:
+        is_optional: True
+
+  - name: is_foil
+    type: bool
+    column_type: Boolean
+    schema:
+      is_base:
+        is_optional: True
+  
+  - name: first_seen
+    type: datetime
+    column_type: DateTime
+    schema:
+      is_indb:
+        is_optional: False
+  
+  - name: last_updated
+    type: datetime
+    column_type: DateTime
+    schema:
+      is_indb:
+        is_optional: True
+  
+  - name: card_id
+    type: int
+    column_type: Integer
+    fk: "card.id"
+    schema:
+      is_base: 
+        is_optional: True
+      is_create:
+        is_optional: False
+
+  - name: store_id
+    type: int
+    column_type: Integer
+    fk: "store.id"
+    schema:
+      is_base: 
+        is_optional: True
+      is_create:
+        is_optional: False
+
+  
