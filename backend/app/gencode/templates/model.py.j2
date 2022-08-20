@@ -1,0 +1,25 @@
+from typing import TYPE_CHECKING
+
+from sqlalchemy import Column{% for type in column_types %}, {{type}}{% endfor %}
+
+{% if sqlalchemy_util_types|length > 0 %}
+from sqlalchemy_utils import {{ sqlalchemy_util_types|join(', ') }}
+{% endif %}
+{% if relationships|length > 0 %}
+from sqlalchemy.orm import relationship
+{% endif %}
+
+from app.db.base_class import Base
+
+if TYPE_CHECKING:
+    from .{{lower_name}} import {{upper_name}}  # noqa: F401
+ 
+class {{upper_name}}(Base):
+    id = Column(Integer, primary_key=True, index=True)
+    {% for field in fields %}
+    {{field.name}} = Column({{field.column_type}}{% if field.column_arg %}({{field.column_arg}}){% endif %}{% if field.is_index %}, index=True{% endif %}{% if field.default %}, default={{field.default}}{% endif %}{% if field.is_unique %}, unique=True{% endif %}{% if field.fk %}, ForeignKey("{{field.fk}}"){% endif %})
+    {% endfor %}
+
+    {% for relationship in relationships %}
+    {{relationship.name}} = relationship('{{relationship.class}}', backref='{{lower_name}}'{% if relationship.cascade %}, cascade='{{relationship.cascade}}'{% endif %})
+    {% endfor %}

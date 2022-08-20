@@ -1,0 +1,117 @@
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
+
+from app import crud
+from app.core.config import settings
+from app.tests.utils.{{lower_name}} import create_random_{{lower_name}}
+from app.tests.utils.utils import random_lower_string
+{% if has_program_id %}
+from app.schemas.program import Program
+{% endif %}
+
+
+def test_create_{{lower_name}}(
+    client: TestClient, superuser_token_headers: dict, db: Session{% if has_program_id %}, program: Program{% endif %}
+) -> None:
+    # TODO - Fill in fields with proper values
+    data = {
+        {% for field in fields %}
+        {% if field.name == "program_id" %}
+        "{{field.name}}": program.id,
+        {% else %}
+        "{{field.name}}": random_lower_string(),
+        {% endif %}
+        {% endfor %}
+        }
+    response = client.post(
+        f"{settings.API_V1_STR}/{{lower_name}}s/", headers=superuser_token_headers, json=data,
+    )
+    assert response.status_code == 200
+    content = response.json()
+    assert "id" in content
+    {% for field in fields %}
+    {% if field.name == "program_id" %}
+    assert content["{{field.name}}"] == program.id
+    {% else %}
+    assert content["{{field.name}}"] == data["{{field.name}}"]
+    {% endif %}
+    {% endfor %}
+    
+    {% if not has_program_id %}
+    crud.{{lower_name}}.remove(db=db, id={{lower_name}}.id)
+    {% endif %}
+
+
+def test_read_{{lower_name}}(
+    client: TestClient, superuser_token_headers: dict, db: Session{% if has_program_id %}, program: Program{% endif %}
+) -> None:
+    {{lower_name}} = create_random_{{lower_name}}(db=db{% if has_program_id %}, program_id=program.id{% endif %})
+    response = client.get(
+        f'{settings.API_V1_STR}/{{lower_name}}s/{{'{'}}{{lower_name}}.id{{'}'}}', headers=superuser_token_headers,
+    )
+    assert response.status_code == 200
+    content = response.json()
+    {% for field in fields %}
+    {% if field.name == "program_id" %}
+    assert content["{{field.name}}"] == program.id
+    {% else %}
+    assert content["{{field.name}}"] == {{lower_name}}.{{field.name}}
+    {% endif %}
+    {% endfor %}
+
+    {% if not has_program_id %}
+    crud.{{lower_name}}.remove(db=db, id={{lower_name}}.id)
+    {% endif %}
+
+
+def test_retrieve_{{lower_name}}s(
+    client: TestClient, superuser_token_headers: dict, db: Session{% if has_program_id %}, program: Program{% endif %}
+) -> None:
+    {{lower_name}}_1 = create_random_{{lower_name}}(db=db{% if has_program_id %}, program_id=program.id{% endif %})
+    {{lower_name}}_2 = create_random_{{lower_name}}(db=db{% if has_program_id %}, program_id=program.id{% endif %})
+
+    r = client.get(f"{settings.API_V1_STR}/{{lower_name}}s/", headers=superuser_token_headers)
+    all_{{lower_name}}s = r.json()
+
+    assert len(all_{{lower_name}}s) > 1
+    for item in all_{{lower_name}}s:
+        assert "id" in item
+        
+    {% if not has_program_id %}
+    crud.{{lower_name}}.remove(db=db, id={{lower_name}}_1.id)
+    crud.{{lower_name}}.remove(db=db, id={{lower_name}}_2.id)
+    {% endif %}
+
+def test_update_{{lower_name}}(
+    client: TestClient, superuser_token_headers: dict, db: Session{% if has_program_id %}, program: Program{% endif %}
+) -> None:
+    {{lower_name}} = create_random_{{lower_name}}(db=db{% if has_program_id %}, program_id=program.id{% endif %})
+    # TODO - Fill in field name
+    new_field = random_lower_string()
+    data = {"field": new_field}
+
+    response = client.put(
+        f"{settings.API_V1_STR}/{{lower_name}}s/{{'{'}}{{lower_name}}.id{{'}'}}",
+        headers=superuser_token_headers,
+        json=data,
+    )
+
+    assert response.status_code == 200
+    content = response.json()
+    assert content["id"] == {{lower_name}}.id
+    # TODO - Fill in field name
+    assert content["field"] == new_field
+
+
+def test_delete_{{lower_name}}(
+    client: TestClient, superuser_token_headers: dict, db: Session{% if has_program_id %}, program: Program{% endif %}
+) -> None:
+    {{lower_name}} = create_random_{{lower_name}}(db=db{% if has_program_id %}, program_id=program.id{% endif %})
+
+    response = client.delete(
+        f"{settings.API_V1_STR}/{{lower_name}}s/{{'{'}}{{lower_name}}.id{{'}'}}", headers=superuser_token_headers,
+    )
+
+    deleted_{{lower_name}} = crud.{{lower_name}}.get(db=db, id={{lower_name}}.id)
+    assert response.status_code == 200
+    assert deleted_{{lower_name}} is None

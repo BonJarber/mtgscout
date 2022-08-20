@@ -1,0 +1,160 @@
+from sqlalchemy.orm import Session
+
+from app import crud
+from app.schemas.{{lower_name}} import {{upper_name}}Create, {{upper_name}}Update
+from app.tests.utils.{{lower_name}} import create_random_{{lower_name}}
+{% if has_program_id %}
+from app.schemas.program import Program
+{% endif %}
+from app.tests.utils.utils import random_lower_string
+
+
+def test_create_{{lower_name}}(db: Session{% if has_program_id %}, program: Program{% endif %}) -> None:
+    # Define values
+    {% for field in fields %}
+    {% if field.name != "program_id" %}
+    {{field.name}} = random_lower_string()
+    {% endif %}
+    {% endfor %}
+
+    # Build create schema
+    {{lower_name}}_in = {{upper_name}}Create(
+        {% for field in fields %}
+        {% if field.name == "program_id" %}
+        {{field.name}}=program.id,
+        {% else %}
+        {{field.name}}={{field.name}},
+        {% endif %}
+        {% endfor %}
+    )
+    # Create {{lower_name}}
+    {{lower_name}} = crud.{{lower_name}}.create(db=db, obj_in={{lower_name}}_in)
+
+    # Check values
+    {% for field in fields %}
+    {% if field.name == "program_id" %}
+    assert {{lower_name}}.{{field.name}} == program.id
+    {% else %}
+    assert {{lower_name}}.{{field.name}} == {{field.name}}
+    {% endif %}
+    {% endfor %}
+
+    # Clean-up
+    {% if not has_program_id %}
+    crud.{{lower_name}}.remove(db=db, id={{lower_name}}.id)
+    {% endif %}
+    
+
+
+def test_get_{{lower_name}}(db: Session{% if has_program_id %}, program: Program{% endif %}) -> None:
+    # Create {{lower_name}}
+    {% if has_program_id %}
+    {{lower_name}} = create_random_{{lower_name}}(db=db, program_id=program.id)
+    {% else %}
+    {{lower_name}} = create_random_{{lower_name}}(db=db)
+    {% endif %}
+    
+    
+    # Query created {{lower_name}}
+    stored_{{lower_name}} = crud.{{lower_name}}.get(db=db, id={{lower_name}}.id)
+
+    # Check values
+    assert stored_{{lower_name}}
+    assert {{lower_name}}.id == stored_{{lower_name}}.id
+    {% for field in fields %}
+    assert {{lower_name}}.{{field.name}} == stored_{{lower_name}}.{{field.name}}
+    {% endfor %}
+    
+    # Clean-up
+    {% if not has_program_id %}
+    crud.{{lower_name}}.remove(db=db, id={{lower_name}}.id)
+    {% endif %}
+
+
+def test_update_{{lower_name}}(db: Session{% if has_program_id %}, program: Program{% endif %}) -> None:
+    # Define values
+    {% for field in fields %}
+    {% if field.name != "program_id" %}
+    {{field.name}} = random_lower_string()
+    {% endif %}
+    {% endfor %}
+
+    # Build create schema
+    {{lower_name}}_in = {{upper_name}}Create(
+        {% for field in fields %}
+        {% if field.name == "program_id" %}
+        {{field.name}}=program.id,
+        {% else %}
+        {{field.name}}={{field.name}},
+        {% endif %}
+        {% endfor %}
+    )
+    # Create {{lower_name}}
+    {{lower_name}} = crud.{{lower_name}}.create(db=db, obj_in={{lower_name}}_in)
+
+    # Define new field
+    # TODO fill in new_field
+    new_field = random_lower_string()
+
+    # Build update schema
+    # TODO fill in new_field
+    {{lower_name}}_update = {{upper_name}}Update(field=new_field)
+
+    # Update {{lower_name}}
+    {{lower_name}}2 = crud.{{lower_name}}.update(db=db, db_obj={{lower_name}}, obj_in={{lower_name}}_update)
+
+    # Check values
+    assert {{lower_name}}.id == {{lower_name}}2.id
+    # TODO fill in field values
+    '''
+    assert {{lower_name}}.somefield == {{lower_name}}2.somefield
+    assert {{lower_name}}2.field != original_field
+    assert {{lower_name}}2.field == new_field
+    '''
+    
+    # Clean-up
+    {% if not has_program_id %}
+    crud.{{lower_name}}.remove(db=db, id={{lower_name}}.id)
+    {% endif %}
+
+def test_delete_{{lower_name}}(db: Session{% if has_program_id %}, program: Program{% endif %}) -> None:
+    # Define values
+    {% for field in fields %}
+    {% if field.name != "program_id" %}
+    {{field.name}} = random_lower_string()
+    {% endif %}
+    {% endfor %}
+
+
+    # Build create schema
+    {{lower_name}}_in = {{upper_name}}Create(
+        {% for field in fields %}
+        {% if field.name == "program_id" %}
+        {{field.name}}=program.id,
+        {% else %}
+        {{field.name}}={{field.name}},
+        {% endif %}
+        {% endfor %}
+    )
+    # Create {{lower_name}}
+    {{lower_name}} = crud.{{lower_name}}.create(db=db, obj_in={{lower_name}}_in)
+
+    # Delete {{lower_name}}
+    {{lower_name}}2 = crud.{{lower_name}}.remove(db=db, id={{lower_name}}.id)
+
+    # Try querying deleted {{lower_name}}
+    {{lower_name}}3 = crud.{{lower_name}}.get(db=db, id={{lower_name}}.id)
+    
+    assert {{lower_name}}3 is None
+
+    {% if not has_program_id %}
+    crud.{{lower_name}}.remove(db=db, id={{lower_name}}.id)
+    {% endif %}
+
+    # Check values
+    assert {{lower_name}}2.id == {{lower_name}}.id
+    {% for field in fields %}
+    {% if field.name != "program_id" %}
+    assert {{lower_name}}.{{field.name}} == {{field.name}}
+    {% endif %}
+    {% endfor %}

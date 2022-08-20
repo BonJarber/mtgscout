@@ -1,0 +1,40 @@
+# app/db/base.py
+...
+from app.models.{{lower_name}} import {{upper_name}}  # noqa
+
+# app/models/__init__.py
+...
+from .{{lower_name}} import {{upper_name}}  # noqa
+
+# app/schemas/__init__.py
+...
+from .{{lower_name}} import {{upper_name}}, {{upper_name}}Create, {{upper_name}}InDB, {{upper_name}}Update   # noqa
+
+# app/crud/__init__.py
+...
+from .crud_{{lower_name}} import {{lower_name}}  #noqa
+
+{% if is_api %}
+# app/api/api_v1/api.py
+...
+from app.api.api_v1.endpoints import ..., {{lower_name}}s
+...
+api_router.include_router({{lower_name}}s.router, prefix="/{{lower_name}}s", tags=["{{upper_name}}s"])
+{% endif %}
+
+
+'''
+Next run:
+
+docker-compose exec backend bash
+
+alembic revision --autogenerate -m "your message"
+
+{% if sqlalchemy_util_types|length > 0 %}
+# Modify the new version using sudo to include:
+
+import sqlalchemy_utils
+{% endif %}
+
+alembic upgrade head
+'''

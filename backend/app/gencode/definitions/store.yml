@@ -1,0 +1,29 @@
+lower_name: "store"
+upper_name: "Store"
+is_api: False
+fields:
+
+  - name: name
+    type: str
+    column_type: String
+    is_index: True
+    schema:
+      is_base:
+        is_optional: True
+
+  - name: affiliate_code
+    type: str
+    column_type: String
+    is_index: True
+    schema:
+      is_base: 
+        is_optional: True
+      is_create:
+        is_optional: False
+
+  - name: website
+    type: str
+    column_type: HttpUrl
+    schema:
+      is_base:
+        is_optional: True

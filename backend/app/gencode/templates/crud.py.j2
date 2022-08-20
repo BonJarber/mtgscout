@@ -1,0 +1,55 @@
+from typing import List, Any, Dict, Union
+
+from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import Session
+
+from app.crud.base import CRUDBase
+from app.models.{{lower_name}} import {{upper_name}}
+from app.schemas.{{lower_name}} import {{upper_name}}Create, {{upper_name}}Update
+
+
+class CRUD{{upper_name}}(CRUDBase[{{upper_name}}, {{upper_name}}Create, {{upper_name}}Update]):
+    {% if has_program_id %}
+    def get_multi_by_program(
+        self, db: Session, *, program_id: int, skip: int = 0, limit: int = 100
+    ) -> List[{{upper_name}}]:
+        return db.query({{upper_name}}).filter({{upper_name}}.program_id == program_id).offset(skip).limit(limit).all()
+    {% endif %}
+    
+    # Use this if you need functionality on update, otherwise delete
+    '''
+    def update(
+        self,
+        db: Session,
+        *,
+        db_obj: {{upper_name}},
+        obj_in: Union[{{upper_name}}Update, Dict[str, Any]]
+    ) -> {{upper_name}}:
+        obj_data = jsonable_encoder(db_obj)
+        if isinstance(obj_in, dict):
+            update_data = obj_in
+        else:
+            update_data = obj_in.dict(exclude_unset=True)
+        for field in obj_data:
+            if field in update_data:
+                if field == "example":
+                    pass # Do something here       
+                setattr(db_obj, field, update_data[field])
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+    
+    # Use this if you need functionality on creation, otherwise delete
+    def create(self, db: Session, *, obj_in: {{upper_name}}Create) -> {{upper_name}}:
+      # Do something on create
+      obj_in_data = jsonable_encoder(obj_in)
+      db_obj = self.model(**obj_in_data)  # type: ignore
+      db.add(db_obj)
+      db.commit()
+      db.refresh(db_obj)
+      return db_obj
+    '''
+
+
+{{lower_name}} = CRUD{{upper_name}}({{upper_name}})

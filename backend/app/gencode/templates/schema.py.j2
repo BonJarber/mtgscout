@@ -1,0 +1,62 @@
+from typing import Optional
+
+from pydantic import BaseModel
+{% if pydantic_types|length > 0 %}
+from pydantic import {{ pydantic_types|join(', ') }}
+{% endif %}
+
+
+# Shared properties
+class {{upper_name}}Base(BaseModel):
+    {% for field in fields %}
+    {% if field.schema.is_base %}
+    {{field.name}}: {% if field.schema.is_base.is_optional %}Optional[{{field.type}}]{% else %}{{field.type}}{% endif %}
+    
+    {% endif %}
+    {% endfor %}
+
+
+# Properties to receive on {{lower_name}} creation
+class {{upper_name}}Create({{upper_name}}Base):
+    {% for field in fields %}
+    {% if field.schema.is_create %}
+    {{field.name}}: {% if field.schema.is_create.is_optional %}Optional[{{field.type}}]{% else %}{{field.type}}{% endif %}
+    {% endif %}
+    {% endfor %}
+
+
+# Properties to receive on {{lower_name}} update
+class {{upper_name}}Update({{upper_name}}Base):
+    {% if has_update %}
+    {% for field in fields %}
+    {% if field.schema.is_update %}
+    {{field.name}}: {% if field.schema.is_update.is_optional %}Optional[{{field.type}}]{% else %}{{field.type}}{% endif %}
+    {% endif %}
+    {% endfor %}
+    {% else %}
+    pass
+    {% endif %}
+
+
+# Properties shared by models stored in DB
+class {{upper_name}}InDBBase({{upper_name}}Base):
+    id: int
+    {% for field in fields %}
+    {% if field.schema.is_indb %}
+    {{field.name}}: {% if field.schema.is_indb.is_optional %}Optional[{{field.type}}]{% else %}{{field.type}}{% endif %}
+    
+    {% endif %}
+    {% endfor %}
+
+    class Config:
+        orm_mode = True
+
+
+# Properties to return to client
+class {{upper_name}}({{upper_name}}InDBBase):
+    pass
+
+
+# Additional properties stored in DB
+class {{upper_name}}InDB({{upper_name}}InDBBase):
+    pass

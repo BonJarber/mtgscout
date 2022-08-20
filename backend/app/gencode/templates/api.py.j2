@@ -1,0 +1,125 @@
+from typing import Any, List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from app import crud, models, schemas
+from app.api import deps
+{% if has_program_id %}
+from app.api.api_utils import load_program
+{% endif %}
+
+router = APIRouter()
+
+
+@router.get("/", response_model=List[schemas.{{upper_name}}])
+def read_{{lower_name}}s(
+    *,
+    db: Session = Depends(deps.get_db),
+    {% if has_program_id %}
+    program_id: int = None,
+    {% endif %}
+    skip: int = 0,
+    limit: int = 100,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Retrieve {{lower_name}}s.
+    """
+    {% if has_program_id %}
+    if program_id:
+        program = load_program(db=db, program_id=program_id)
+        {{lower_name}}s = crud.{{lower_name}}.get_multi_by_program(db=db, program_id=program.id, skip=skip, limit=limit)
+    else:
+        {{lower_name}}s = crud.{{lower_name}}.get_multi(db=db, skip=skip, limit=limit)
+    {% else %}
+    {{lower_name}}s = crud.{{lower_name}}.get_multi(db=db, skip=skip, limit=limit)
+    {% endif %}
+    return {{lower_name}}s
+
+
+@router.post("/", response_model=schemas.{{upper_name}})
+def create_{{lower_name}}(
+    *,
+    db: Session = Depends(deps.get_db),
+    {{lower_name}}_in: schemas.{{upper_name}}Create,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Create new {{lower_name}}.
+    """
+    if not crud.user.is_superuser(current_user):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+    {% if has_program_id %}
+    load_program(db=db, program_id={{lower_name}}_in.program_id)
+    {% endif %}
+    {{lower_name}} = crud.{{lower_name}}.create(db=db, obj_in={{lower_name}}_in)
+    return {{lower_name}}
+
+
+@router.put("/{id}", response_model=schemas.{{upper_name}})
+def update_{{lower_name}}(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: int,
+    {{lower_name}}_in: schemas.{{upper_name}}Update,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Update a {{lower_name}}.
+    """
+    if not crud.user.is_superuser(current_user):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+    
+    {% if has_program_id %}
+    if {{lower_name}}_in.program_id:
+        # Check to make sure the program exists
+        load_program(db=db, program_id={{lower_name}}_in.program_id)
+    {% endif %}
+
+    {{lower_name}} = crud.{{lower_name}}.get(db=db, id=id)
+    if not {{lower_name}}:
+        raise HTTPException(status_code=404, detail="{{upper_name}} not found")
+    {{lower_name}} = crud.{{lower_name}}.update(db=db, db_obj={{lower_name}}, obj_in={{lower_name}}_in)
+    return {{lower_name}}
+
+
+@router.get("/{id}", response_model=schemas.{{upper_name}})
+def read_{{lower_name}}(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: int,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Get {{lower_name}} by ID.
+    """
+    {{lower_name}} = crud.{{lower_name}}.get(db=db, id=id)
+    {% if has_program_id %}
+    if {{lower_name}}.program.is_private and not crud.user.is_superuser(current_user):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+    {% endif %}
+    if not {{lower_name}}:
+        raise HTTPException(status_code=404, detail="{{upper_name}} not found")
+    return {{lower_name}}
+
+
+@router.delete("/{id}", response_model=schemas.{{upper_name}})
+def delete_{{lower_name}}(
+    *,
+    db: Session = Depends(deps.get_db),
+    id: int,
+    current_user: models.User = Depends(deps.get_current_active_user),
+) -> Any:
+    """
+    Delete a {{lower_name}}.
+    """
+    if not crud.user.is_superuser(current_user):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+
+    {{lower_name}} = crud.{{lower_name}}.get(db=db, id=id)
+    if not {{lower_name}}:
+        raise HTTPException(status_code=404, detail="{{upper_name}} not found")
+    {{lower_name}} = crud.{{lower_name}}.remove(db=db, id=id)
+    return {{lower_name}}
