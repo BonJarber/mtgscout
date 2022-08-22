@@ -32,3 +32,7 @@ class Card(Base):
         "CardPrice", cascade="all, delete-orphan", backref="card", lazy="dynamic"
     )
 
+    scouts = relationship(
+        "Scout", cascade="all, delete-orphan", backref="card", lazy="dynamic"
+    )
+

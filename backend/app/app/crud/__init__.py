@@ -3,6 +3,7 @@ from .crud_user import user
 from .crud_card import card
 from .crud_store import store
 from .crud_card_price import card_price  # noqa
+from .crud_scout import scout  # noqa
 
 # For a new basic set of CRUD operations you could just do
 

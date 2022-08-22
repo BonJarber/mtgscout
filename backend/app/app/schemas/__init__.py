@@ -11,4 +11,11 @@ from .card_price import (
     CardPriceInDB,
     CardPriceUpdate,
 )  # noqa
-
+from .scout import (
+    Scout,
+    ScoutCreate,
+    ScoutInDB,
+    ScoutUpdate,
+    ScoutType,
+    ScoutApiCreate,
+)  # noqa

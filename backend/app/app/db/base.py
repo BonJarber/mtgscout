@@ -7,3 +7,4 @@ from app.models.card import Card  # noqa
 from app.models.image_uri import ImageURI  # noqa
 from app.models.store import Store  # noqa
 from app.models.card_price import CardPrice  # noqa
+from app.models.scout import Scout  # noqa

@@ -1,0 +1,85 @@
+lower_name: "scout"
+upper_name: "Scout"
+is_api: True
+fields:
+
+  - name: scout_type
+    type: ScoutType
+    column_type: Enum
+    is_index: True
+    schema:
+      is_base:
+        is_optional: True
+      is_create:
+        is_optional: False
+
+  - name: price
+    type: Decimal
+    column_type: DECIMAL
+    is_index: True
+    schema:
+      is_base: 
+        is_optional: True
+  
+  - name: quantity
+    type: int
+    column_type: Integer
+    is_index: False
+    schema:
+      is_base: 
+        is_optional: True
+
+  - name: condition
+    type: str
+    column_type: String
+    schema:
+      is_base:
+        is_optional: True
+
+  - name: foil
+    type: bool
+    column_type: Boolean
+    schema:
+      is_base:
+        is_optional: True
+  
+  - name: nonfoil
+    type: bool
+    column_type: Boolean
+    schema:
+      is_base:
+        is_optional: True
+  
+  - name: first_created
+    type: datetime
+    column_type: DateTime
+    schema:
+      is_indb:
+        is_optional: False
+  
+  - name: last_updated
+    type: datetime
+    column_type: DateTime
+    schema:
+      is_indb:
+        is_optional: True
+  
+  - name: card_id
+    type: int
+    column_type: Integer
+    fk: "card.id"
+    schema:
+      is_base: 
+        is_optional: True
+      is_create:
+        is_optional: False
+
+  - name: user_id
+    type: int
+    column_type: Integer
+    fk: "user.id"
+    schema:
+      is_indb:
+        is_optional: False
+
+  
