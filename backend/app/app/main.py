@@ -37,10 +37,11 @@ if settings.BACKEND_CORS_ORIGINS:
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
-asyncio.create_task(run_bot())
+if settings.APP_ENV != "test":
+    asyncio.create_task(run_bot())
 
 
 @app.on_event("startup")
-@repeat_every(seconds=60 * 60, logger=logger)
+@repeat_every(seconds=60 * 60, wait_first=True, logger=logger)
 def check_scouts_task() -> None:
     check_scouts()
