@@ -82,6 +82,14 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PASSWORD: str
     USERS_OPEN_REGISTRATION: bool = False
 
+    USE_NGROK: bool
+    NGROK_TOKEN: Optional[str] = None
+
+    DISCORD_TOKEN: str
+    DISCORD_APP_ID: int
+    DISCORD_PUBLIC_KEY: str
+    DISCORD_GUILD_ID: int
+
     class Config:
         case_sensitive = True
 
