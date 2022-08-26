@@ -9,7 +9,13 @@ from app.schemas.card import CardCreate, CardUpdate
 
 
 class CRUDCard(CRUDBase[Card, CardCreate, CardUpdate]):
-    pass
+    def get_by_name_set(self, db: Session, *, name: str, set_name: str) -> List[Card]:
+        return (
+            db.query(self.model)
+            .filter(Card.name == name)
+            .filter(Card.set_name == set_name)
+            .all()
+        )
 
 
 card = CRUDCard(Card)
